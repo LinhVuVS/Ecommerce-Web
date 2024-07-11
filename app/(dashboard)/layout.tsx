@@ -11,6 +11,7 @@ import {
 } from "@clerk/nextjs";
 import LeftSideBar from "@/components/Layout/LeftSideBar";
 import TopBar from "@/components/Layout/TopSideBar";
+import { ToasterProvider } from "@/lib/ToastProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
+          <ToasterProvider />
           <header>
             <SignedOut>
               <SignInButton />
