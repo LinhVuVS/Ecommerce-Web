@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,6 +20,7 @@ import { Textarea } from "../ui/textarea";
 import ImageUpload from "../customui/ImageUpload";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import Delete from "../customui/Delete";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -28,44 +28,65 @@ const formSchema = z.object({
   image: z.string(),
 });
 
-const CollectionForm = () => {
+interface CollectionFormProps {
+  initialData?: CollectionType | null; //Must have "?" to make it optional
+}
 
+const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
   const router = useRouter();
 
-  const[laoding, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      image: "",
-    },
+    defaultValues: initialData
+      ? initialData
+      : {
+          title: "",
+          description: "",
+          image: "",
+        },
   });
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  }
+  
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try{
+    try {
       setLoading(true);
-      const res = await fetch("/api/collections",{
+      const url = initialData
+        ? `/api/collections/${initialData._id}`
+        : "/api/collections";
+      const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify(values),
-      })
-
-      if(res.ok) {
+      });
+      if (res.ok) {
         setLoading(false);
-        toast.success("Collections created");
+        toast.success(`Collection ${initialData ? "updated" : "created"}`);
+        window.location.href = "/collections";
         router.push("/collections");
       }
-
-    } catch(err){
-      console.log("[Collections_POST]", err);
-      toast.error("Something went wrong! PLeaase try again");
+    } catch (err) {
+      console.log("[collections_POST]", err);
+      toast.error("Something went wrong! Please try again.");
     }
   };
+
   return (
     <div className="p-10">
-      <p className="text-heading2-bold">Create Collection</p>
-      <Separator className="my-4 bg-grey-1 mt-4 mb-7" />
+      {initialData ? (
+        <div className="flex items-center justify-between">
+          <p className="text-heading2-bold">Edit Collection</p>
+          <Delete id={initialData._id}/>
+        </div>
+      ) : (
+        <p className="text-heading2-bold">Create Collection</p>
+      )}
+      <Separator className="bg-grey-1 mt-4 mb-7" />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -75,7 +96,7 @@ const CollectionForm = () => {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Title" {...field}  />
+                  <Input placeholder="Title" {...field} onKeyDown={handleKeyPress} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -88,7 +109,7 @@ const CollectionForm = () => {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Description" {...field} rows={5} />
+                  <Textarea placeholder="Description" {...field} rows={5} onKeyDown={handleKeyPress} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
