@@ -18,7 +18,12 @@ export const columns: ColumnDef<CollectionType>[] = [
     ),
   },
   {
+    accessorKey: "products",
+    header: "Products",
+    cell: ({ row }) => <p>{row.original.products.length}</p>,
+  },
+  {
     id: "actions",
-    cell: ({ row }) => <Delete id={row.original._id} />,
+    cell: ({ row }) => <Delete item="collections" id={row.original._id} />,
   },
 ];

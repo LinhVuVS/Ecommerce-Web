@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 
 import { connectToDB } from "@/lib/mongoDB";
 import Collection from "@/lib/models/Collection";
+import Product from "@/lib/models/Product";
 
 export const GET = async (
   req: NextRequest,
@@ -69,7 +70,7 @@ export const POST = async (
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { collectionId: string } }
+  { params }: { params: { productId: string } }
 ) => {
   try {
     const { userId } = auth();
@@ -80,11 +81,31 @@ export const DELETE = async (
 
     await connectToDB();
 
-    await Collection.findByIdAndDelete(params.collectionId);
-    
-    return new NextResponse("Collection is deleted", { status: 200 });
+    const product = await Product.findById(params.productId);
+
+    if (!product) {
+      return new NextResponse(
+        JSON.stringify({ message: "Product not found" }),
+        { status: 404 }
+      );
+    }
+
+    await Product.findByIdAndDelete(product._id);
+
+    // Update collections
+    await Promise.all(
+      product.collections.map((collectionId: string) =>
+        Collection.findByIdAndUpdate(collectionId, {
+          $pull: { products: product._id },
+        })
+      )
+    );
+
+    return new NextResponse(JSON.stringify({ message: "Product deleted" }), {
+      status: 200,
+    });
   } catch (err) {
-    console.log("[collectionId_DELETE]", err);
+    console.log("[productId_DELETE]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
