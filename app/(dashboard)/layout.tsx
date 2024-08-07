@@ -30,11 +30,6 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <ToasterProvider />
-          <header>
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-          </header>
           <div className="flex max-lg:flex-col text-grey-1">
             <LeftSideBar />
             <TopBar />
