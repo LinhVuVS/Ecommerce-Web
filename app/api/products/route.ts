@@ -64,8 +64,8 @@ export const POST = async (req: NextRequest) => {
     console.log("[products_POST]", err);
     return new NextResponse("Internal Error", { status: 500 });
   }
-  
 };
+
 export const GET = async (req: NextRequest) => {
   try {
     await connectToDB();
@@ -82,3 +82,4 @@ export const GET = async (req: NextRequest) => {
 };
 
 export const dynamic = "force-dynamic";
+

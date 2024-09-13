@@ -1,4 +1,5 @@
 import {
+    Album,
     LayoutDashboard,
     Shapes,
     ShoppingBag,
@@ -31,5 +32,10 @@ import {
       url: "/customers",
       icon: <UsersRound />,
       label: "Customers",
+    },
+    {
+      url: "/banners",
+      icon: <Album/>,
+      label: "Banner",
     },
   ];

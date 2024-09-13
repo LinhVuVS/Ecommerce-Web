@@ -1,10 +1,6 @@
 import { metadata } from '@/app/(auth)/layout';
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
-
-export const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
-    typescript: true
-});
+import { stripe } from '@/lib/stripe';
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -61,3 +57,5 @@ export async function POST(req: NextRequest) {
         return new NextResponse('Internal Server Error', {status: 500})
     }
 }
+
+export const dynamic = "force-dynamic";

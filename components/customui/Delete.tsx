@@ -16,30 +16,34 @@ import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 
 interface DeleteProps {
-  item: string,
+  item: string;
   id: string;
 }
-const Delete: React.FC<DeleteProps> = ({item, id}) => {
-  const[loading,setLoading] = useState(false);
+const Delete: React.FC<DeleteProps> = ({ item, id }) => {
+  const [loading, setLoading] = useState(false);
 
-
-  const onDelete = async () =>{
-    try{
+  const onDelete = async () => {
+    try {
       setLoading(true);
-      const itemType = item === "product" ? "products" :"collections";
+      const itemType =
+        item === "product"
+          ? "products"
+          : item === "banner"
+          ? "banners"
+          : "collections";
       const res = await fetch(`api/${itemType}/${id}`, {
         method: "DELETE",
-      })
-      if(res.ok){
+      });
+      if (res.ok) {
         setLoading(false);
-         window.location.href = `/${itemType}`;
-         toast.success(`${itemType} deleted`);
+        window.location.href = `/${itemType}`;
+        toast.success(`${itemType} deleted`);
       }
-    } catch(err){
+    } catch (err) {
       console.log(err);
       toast.error("Something went wrong! PLease try again.");
     }
-  }
+  };
 
   return (
     <AlertDialog>
@@ -51,13 +55,16 @@ const Delete: React.FC<DeleteProps> = ({item, id}) => {
       <AlertDialogContent className="bg-white text-grey-1">
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription >
-            This action cannot be undone. This will permanently delete your {item}.
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your{" "}
+            {item}.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction className="bg-red-1 text-white" onClick={onDelete}>Continue</AlertDialogAction>
+          <AlertDialogAction className="bg-red-1 text-white" onClick={onDelete}>
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

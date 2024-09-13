@@ -1,5 +1,4 @@
 "use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 
@@ -28,7 +27,16 @@ export const columns: ColumnDef<OrderColumnType>[] = [
   },
   {
     accessorKey: "totalAmount",
-    header: "Total ($)",
+    header: "Total (đ)",
+    cell: ({ row }) => {
+      // Nhân giá trị totalAmount lên 100
+      const totalAmount = row.original.totalAmount * 100;
+
+      // Định dạng số với dấu chấm phân cách
+      const formattedAmount = totalAmount.toLocaleString('vi-VN');
+
+      return <span>{formattedAmount} đ</span>;
+    },
   },
   {
     accessorKey: "createdAt",
